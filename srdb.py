@@ -23,6 +23,49 @@ class Game:
 
 games = [\
 
+	Game("21-Jul-18", "Lions", "Jaguares", 40, 23),
+	Game("21-Jul-18", "Waratahs", "Highlanders", 30, 23),
+	Game("21-Jul-18", "Crusaders", "Sharks", 40, 10),
+	Game("20-Jul-18", "Hurricanes", "Chiefs", 32, 31),
+	
+	Game("14-Jul-18", "Sharks", "Jaguares", 20, 10),
+	Game("14-Jul-18", "Lions", "Bulls", 38, 12),
+	Game("14-Jul-18", "Waratahs", "Brumbies", 31, 40),
+	Game("14-Jul-18", "Crusaders", "Blues", 54, 17),
+	Game("14-Jul-18", "Highlanders", "Rebels", 43, 37),
+	Game("13-Jul-18", "Reds", "Sunwolves", 48, 27),
+	Game("13-Jul-18", "Chiefs", "Hurricanes", 28, 24),
+	
+	Game("07-Jul-18", "Stormers", "Sharks", 27, 16),
+	Game("07-Jul-18", "Bulls", "Jaguares", 43, 34),
+	Game("07-Jul-18", "Waratahs", "Sunwolves", 77, 25),
+	Game("07-Jul-18", "Hurricanes", "Blues", 42, 24),
+	Game("07-Jul-18", "Chiefs", "Brumbies", 24, 19),
+	Game("06-Jul-18", "Reds", "Rebels", 37, 23),
+	Game("06-Jul-18", "Crusaders", "Highlanders", 45, 22),
+	
+	Game("30-Jun-18", "Jaguares", "Stormers", 25, 14),
+	Game("30-Jun-18", "Sharks", "Lions", 31, 24),
+	Game("30-Jun-18", "Sunwolves", "Bulls", 42, 37),
+	Game("30-Jun-18", "Brumbies", "Hurricanes", 24, 12),
+	Game("30-Jun-18", "Highlanders", "Chiefs", 22, 45),
+	Game("29-Jun-18", "Rebels", "Waratahs", 26, 31),
+	Game("29-Jun-18", "Blues", "Reds", 39, 16),
+	
+	Game("03-Jun-18", "Brumbies", "Sunwolves", 41, 31),
+	Game("02-Jun-18", "Reds", "Waratahs", 41, 52),
+	Game("02-Jun-18", "Chiefs", "Crusaders", 20, 34),
+	Game("02-Jun-18", "Blues", "Rebels", 10, 20),
+	Game("01-Jun-18", "Highlanders", "Hurricanes", 30, 14),
+	
+	Game("26-May-18", "Stormers", "Lions", 23, 26),
+	Game("26-May-18", "Bulls", "Brumbies", 28, 38),
+	Game("26-May-18", "Reds", "Highlanders", 15, 18),
+	Game("26-May-18", "Chiefs", "Waratahs", 39, 27),
+	Game("25-May-18", "Jaguares", "Sharks", 29, 13),
+	Game("25-May-18", "Rebels", "Sunwolves", 40, 13),
+	Game("25-May-18", "Crusaders", "Hurricanes", 24, 13),
+
 	Game("19-May-18", "Jaguares", "Bulls", 54, 24),
 	Game("19-May-18", "Lions", "Brumbies", 42, 24),
 	Game("19-May-18", "Sharks", "Chiefs", 28, 24),
