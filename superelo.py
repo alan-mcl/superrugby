@@ -104,10 +104,13 @@ def polyfit(elo_values, actual_margins, polyorder=3):
 #==============================================================================
 class Model:
 
+	def getName(this):
+		pass
+		
 	def getStartingElo(this):
 		pass
 	
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		pass
 		
 	def getNewElo(this, old_elo, expected, points_for, points_against):
@@ -131,7 +134,7 @@ class LinearLSModel(Model):
 	def getStartingElo(this):
 		return 1500
 		
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
 		# traditional ELO calc
 		home_perc = expected(home_elo, away_elo)
@@ -157,9 +160,9 @@ class RoundedLLSModel(LinearLSModel):
 	def getName(this):
 		return "Linear LS (BRUround2, seasonal mean reg, k=%i, dwm=%i)" % (this.kfactor, this.default_win_margin)
 	
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
-		(pred_margin, home_perc, away_perc) = LinearLSModel.getPredictedMargin(this, home_elo, away_elo)
+		(pred_margin, home_perc, away_perc) = LinearLSModel.getPredictedMargin(this, game, home_elo, away_elo)
 		
 		return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
 		
@@ -174,9 +177,9 @@ class RoundedLLSModel2(LinearLSModel):
 	def getName(this):
 		return "Linear LS (BRUround2, seasonal mean reg, k=%i, dwm=%i, annual refit)" % (this.kfactor, this.default_win_margin)
 	
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
-		(pred_margin, home_perc, away_perc) = LinearLSModel.getPredictedMargin(this, home_elo, away_elo)
+		(pred_margin, home_perc, away_perc) = LinearLSModel.getPredictedMargin(this, game, home_elo, away_elo)
 		
 		return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
 		
@@ -208,7 +211,7 @@ class QuadraticModel(Model):
 	def getStartingElo(this):
 		return 1500
 		
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
 		# traditional ELO calc
 		home_perc = expected(home_elo, away_elo)
@@ -238,9 +241,9 @@ class RoundedQuadraticModel(QuadraticModel):
 	def getName(this):
 		return "3rd Order Poly (BRU rounding)"
 	
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
-		(pred_margin, home_perc, away_perc) = QuadraticModel.getPredictedMargin(this, home_elo, away_elo)
+		(pred_margin, home_perc, away_perc) = QuadraticModel.getPredictedMargin(this, game, home_elo, away_elo)
 		
 		if abs(home_perc - away_perc) < this.d_min:
 			return (round(pred_margin), home_perc, away_perc)
@@ -259,9 +262,9 @@ class RoundedQuadraticModel2(QuadraticModel):
 	def getName(this):
 		return "3rd Order Poly (BRUround2, k=%i, dmin=%.2f)" % (this.kfactor, this.d_min)
 	
-	def getPredictedMargin(this, home_elo, away_elo):
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
-		(pred_margin, home_perc, away_perc) = QuadraticModel.getPredictedMargin(this, home_elo, away_elo)
+		(pred_margin, home_perc, away_perc) = QuadraticModel.getPredictedMargin(this, game, home_elo, away_elo)
 		
 		if abs(home_perc - away_perc) < this.d_min:
 			return (round(pred_margin), home_perc, away_perc)
@@ -311,6 +314,72 @@ class RoundedQuadraticModel4(RoundedQuadraticModel3):
 			this.m0 = m0			
 
 #==============================================================================
+class TiersModel(Model):
+
+	def __init__(this):
+		this.tiers = \
+		{
+			"Crusaders" : 1,
+			
+			"Lions" : 2,
+			"Hurricanes" : 2,
+			"Highlanders" : 2,
+			"Chiefs" : 2,
+
+			"Waratahs" : 3,
+			"Sharks" : 3,
+			"Stormers" : 3,
+			"Bulls" : 3,
+			"Blues" : 3,
+			"Brumbies" : 3,
+			"Reds" : 3,
+
+			"Jaguares" : 3.5,
+
+			"Rebels" : 4,
+			"Force" : 4,
+			"Cheetahs" : 4,
+
+			"Sunwolves" : 5,
+			"Kings" : 5,
+		}
+		
+	def getName(this):
+		return "TiersModel"
+
+	def getStartingElo(this):
+		return 1500
+	
+	def getPredictedMargin(this, game, home_elo, away_elo):
+		
+		ht = this.tiers[game.home_team]
+		at = this.tiers[game.away_team]
+		
+		base = 6
+		
+		margin = base
+		
+		if ht < at:
+			diff = at - ht
+			margin = base + base*pow(diff-1, 2)
+			
+		elif ht > at:
+			diff = ht - at
+			margin = -(base + base*pow(diff-1, 2))
+			
+		else:
+			margin = base
+			
+		return (margin, 0.0, 0.0)
+			
+		
+	def getNewElo(this, old_elo, expected, points_for, points_against):
+		return 1500
+		
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+		pass
+
+#==============================================================================
 def runModel(model, verbose=False, data_output=False):
 	elo = {}
 	residuals = []
@@ -321,8 +390,8 @@ def runModel(model, verbose=False, data_output=False):
 	# 1995: SUPER12
 	# 2009: first year of data in srdb
 	# 2016: Jap/Arg expansion
-	#FIRST_YEAR_TO_REPORT = 2016
-	FIRST_YEAR_TO_REPORT = 2010
+	FIRST_YEAR_TO_REPORT = 2016
+	#FIRST_YEAR_TO_REPORT = 2010
 	yr = FIRST_YEAR_TO_REPORT
 	yr_residuals = []
 	yr_wins = 0
@@ -359,7 +428,7 @@ def runModel(model, verbose=False, data_output=False):
 		if elo.has_key(game.away_team):
 			away_elo = elo[game.away_team]
 		
-		(pred_margin, home_perc, away_perc) = model.getPredictedMargin(home_elo, away_elo)
+		(pred_margin, home_perc, away_perc) = model.getPredictedMargin(game, home_elo, away_elo)
 		if game.finished:
 			actual_margin = game.home_score-game.away_score
 		else:
@@ -505,6 +574,7 @@ def main():
 		if m == "lls":
 			runModel(LinearLSModel(), verbose, data_output)
 			runModel(RoundedLLSModel(), verbose, data_output)
+			runModel(RoundedLLSModel2(kfactor=50, default_win_margin=3), verbose, data_output)
 		elif m == "3op":
 			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3), verbose, data_output)
@@ -513,7 +583,8 @@ def main():
 		elif m == "all":
 			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(RoundedLLSModel(kfactor=50, default_win_margin=3), verbose, data_output)
-			runModel(RoundedLLSModel2(kfactor=50, default_win_margin=3), verbose, data_output)
+			runModel(TiersModel(), verbose, data_output)
+			
 
 if __name__ == "__main__":
 	main()
