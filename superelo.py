@@ -299,19 +299,18 @@ class RoundedQuadraticModel4(RoundedQuadraticModel3):
 		this.default_win_margin = default_win_margin
 
 	def getName(this):
-		return "3rd Order Poly (BRUround2, seasonal mean reg, k=%i, dmin=%.2f, dwm=%i, annual refit)" % (this.kfactor, this.d_min, this.default_win_margin)
+		return "3rd Order Poly (BRUround2, seasonal mean reg, k=%i, dmin=%.2f, dwm=%i, TierModel dmin)" % (this.kfactor, this.d_min, this.default_win_margin)
 	
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
-		for team in elo.keys():
-			rtg = elo[team]
-			elo[team] = round(1500 + 0.9 * (rtg - 1500))
+	def getPredictedMargin(this, game, home_elo, away_elo):
 		
-		if len(yr_elo_diffs) > 0:
-			(m3, m2, m1, m0) = polyfit(yr_elo_diffs, yr_actual_margins, 3)
-			this.m3 = m3
-			this.m2 = m2
-			this.m1 = m1
-			this.m0 = m0			
+		(pred_margin, home_perc, away_perc) = QuadraticModel.getPredictedMargin(this, game, home_elo, away_elo)
+		
+		if abs(home_perc - away_perc) < this.d_min:
+			tm = TiersModel()
+			return tm.getPredictedMargin(game, home_elo, away_elo)
+		else:
+			return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
+	
 
 #==============================================================================
 class TiersModel(Model):
@@ -581,6 +580,7 @@ def main():
 		elif m == "melo":
 			runModel(MeloModel(), verbose, data_output)
 		elif m == "all":
+			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3, d_min=0.1), verbose, data_output)
 			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(RoundedLLSModel(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(TiersModel(), verbose, data_output)

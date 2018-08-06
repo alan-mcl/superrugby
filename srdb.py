@@ -23,6 +23,11 @@ class Game:
 
 games = [\
 
+	Game("04-Aug-18", "Crusaders", "Lions", 37, 18),
+	
+	Game("28-Jul-18", "Crusaders", "Hurricanes", 30, 12),
+	Game("28-Jul-18", "Lions", "Waratahs", 44, 26),
+
 	Game("21-Jul-18", "Lions", "Jaguares", 40, 23),
 	Game("21-Jul-18", "Waratahs", "Highlanders", 30, 23),
 	Game("21-Jul-18", "Crusaders", "Sharks", 40, 10),
