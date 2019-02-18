@@ -437,11 +437,11 @@ def runModel(model, verbose=False, data_output=False):
 		
 		if verbose or not game.finished:
 			if model.getName() == "MElo":
-				print "%s(%i) v %s(%i): predicted %d actual %i" % (game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin, actual_margin)
+				print "%s: %s(%i) v %s(%i): predicted %d actual %i" % (game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin, actual_margin)
 			else:
-				print "%s(%i) v %s(%i): predicted %d actual %i" % (game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin)
+				print "%s: %s(%i) v %s(%i): predicted %d actual %i" % (game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin)
 		elif data_output and year > 2009:
-			print "%f,%f,%i" % (d, getActualDiff(game.home_score, game.away_score), actual_margin)
+			print "%i,%i,%s,%s,%f,%i" % (year, game.week, game.home_team, game.away_team, d, actual_margin)
 				
 		if game.finished:
 			new_home_elo = model.getNewElo(home_elo, home_perc, game.home_score, game.away_score)
@@ -449,41 +449,42 @@ def runModel(model, verbose=False, data_output=False):
 
 			elo[game.home_team] = new_home_elo
 			elo[game.away_team] = new_away_elo
+			
+		# one year burn in
+		if year > FIRST_YEAR_TO_REPORT-1:
 
-			# one year burn in
-			if year > FIRST_YEAR_TO_REPORT-1:
-				
-				if year > yr:
-					if verbose or True:
-						summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
-					yr = year
-					yr_residuals = []
-					yr_wins = 0
-					yr_margin_pts = 0
-					yr_bonus_pts = 0
-					yr_elo_diffs = []
-					yr_actual_margins = []
-								
-				error = actual_margin - pred_margin
-				residuals.append(error)
-				yr_residuals.append(error)
-				
-				yr_elo_diffs.append(d)
-				yr_actual_margins.append(actual_margin)
-				
-				if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
-					wins += 1
-					yr_wins += 1
+			if year > yr:
+				if verbose or not data_output:
+					summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
+					print "processing %s..." % (str(year))
+				yr = year
+				yr_residuals = []
+				yr_wins = 0
+				yr_margin_pts = 0
+				yr_bonus_pts = 0
+				yr_elo_diffs = []
+				yr_actual_margins = []
 
-				if error <= 5 and error >= -5:
-					margin_pts += 1
-					yr_margin_pts += 1
-					
-				if round(error) == 0:
-					bonus_pts += 1
-					yr_bonus_pts += 1
+			error = actual_margin - pred_margin
+			residuals.append(error)
+			yr_residuals.append(error)
+
+			yr_elo_diffs.append(d)
+			yr_actual_margins.append(actual_margin)
+
+			if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
+				wins += 1
+				yr_wins += 1
+
+			if error <= 5 and error >= -5:
+				margin_pts += 1
+				yr_margin_pts += 1
+
+			if round(error) == 0:
+				bonus_pts += 1
+				yr_bonus_pts += 1
 				
-	if verbose or True:
+	if verbose or not data_output:
 		summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
 		summary("ALL ", residuals, wins, margin_pts, bonus_pts)
 					
@@ -542,7 +543,7 @@ def main():
 		"model",
 		action="store",
 		type=str,
-		help="'all' for all, 'lls' for Linear LS, '3op' for Quadratic, 'melo' for MElo")
+		help="'all' for all, 'lls' for Linear LS, '3op' for Quadratic, 'melo' for MElo, 'best' for current best")
 	parser.add_argument(
 		"--v",
 		action="store_true",
@@ -584,6 +585,8 @@ def main():
 			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(RoundedLLSModel(kfactor=50, default_win_margin=3), verbose, data_output)
 			runModel(TiersModel(), verbose, data_output)
+		elif m == "best":
+			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
 			
 
 if __name__ == "__main__":
