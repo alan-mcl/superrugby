@@ -435,11 +435,16 @@ def runModel(model, verbose=False, data_output=False):
 			
 		d = home_perc-away_perc
 		
-		if verbose or not game.finished:
+		if verbose:
 			if model.getName() == "MElo":
-				print "%s: %s(%i) v %s(%i): predicted %d actual %i" % (game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin, actual_margin)
+				print "week %i: %s: %s(%i) v %s(%i): predicted %d actual %i" % (game.week, game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin, actual_margin)
 			else:
-				print "%s: %s(%i) v %s(%i): predicted %d actual %i" % (game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin)
+				print "week %i: %s: %s(%i) v %s(%i): predicted %d actual %i" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin)
+		elif not game.finished:
+			if model.getName() == "MElo":
+				print "week %i: %s: %s(%i) v %s(%i): predicted %d" % (game.week, game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin)
+			else:
+				print "week %i: %s: %s(%i) v %s(%i): predicted %d" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin)
 		elif data_output and year > 2009:
 			print "%i,%i,%s,%s,%f,%i" % (year, game.week, game.home_team, game.away_team, d, actual_margin)
 				
@@ -464,25 +469,26 @@ def runModel(model, verbose=False, data_output=False):
 				yr_bonus_pts = 0
 				yr_elo_diffs = []
 				yr_actual_margins = []
+				
+			if game.finished:
+				error = actual_margin - pred_margin
+				residuals.append(error)
+				yr_residuals.append(error)
 
-			error = actual_margin - pred_margin
-			residuals.append(error)
-			yr_residuals.append(error)
+				yr_elo_diffs.append(d)
+				yr_actual_margins.append(actual_margin)
 
-			yr_elo_diffs.append(d)
-			yr_actual_margins.append(actual_margin)
+				if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
+					wins += 1
+					yr_wins += 1
 
-			if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
-				wins += 1
-				yr_wins += 1
+				if error <= 5 and error >= -5:
+					margin_pts += 1
+					yr_margin_pts += 1
 
-			if error <= 5 and error >= -5:
-				margin_pts += 1
-				yr_margin_pts += 1
-
-			if round(error) == 0:
-				bonus_pts += 1
-				yr_bonus_pts += 1
+				if round(error) == 0:
+					bonus_pts += 1
+					yr_bonus_pts += 1
 				
 	if verbose or not data_output:
 		summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
@@ -499,8 +505,8 @@ def summary(name, residuals, wins, margin_pts, bonus_pts):
 	winp = 100.0*wins/len(residuals)
 	bru = wins+margin_pts*0.5
 	
-	print "%s: mean %4.1f stddev %4.1f mdm %4.1f mse %4.1f winp %3.1f m[%i] b[%i] BRU [%.1f]" % \
-		(name, mean, stddev, mdm, mse, winp, margin_pts, bonus_pts, bru)
+	print "%s (n=%i): mean %2.1f, stddev %4.1f, mdm %4.1f, mse %4.1f, win%% %3.1f, m[%i] b[%i] BRU [%.1f]" % \
+		(name, len(residuals), mean, stddev, mdm, mse, winp, margin_pts, bonus_pts, bru)
 
 def optimize(model_param):
 	"""
