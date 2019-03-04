@@ -1294,13 +1294,13 @@ games = [\
 	#Bye/s: Rebels
 
 	#Round 3
-	Game("1-Mar-19", "Hurricanes", "Brumbies", None, None),
-	Game("1-Mar-19", "Rebels", "Highlanders", None, None),
-	Game("2-Mar-19", "Chiefs", "Sunwolves", None, None),
-	Game("2-Mar-19", "Reds", "Crusaders", None, None),
-	Game("2-Mar-19", "Lions", "Bulls", None, None),
-	Game("2-Mar-19", "Sharks", "Stormers", None, None),
-	Game("2-Mar-19", "Jaguares", "Blues", None, None),
+	Game("1-Mar-19", "Hurricanes", "Brumbies", 43, 13),
+	Game("1-Mar-19", "Rebels", "Highlanders", 24, 19),
+	Game("2-Mar-19", "Chiefs", "Sunwolves", 15, 30),
+	Game("2-Mar-19", "Reds", "Crusaders", 12, 22),
+	Game("2-Mar-19", "Lions", "Bulls", 12, 30),
+	Game("2-Mar-19", "Sharks", "Stormers", 11, 16),
+	Game("2-Mar-19", "Jaguares", "Blues", 23, 19),
 	#Bye/s: Waratahs
 
 	#Round 4

@@ -390,7 +390,7 @@ def runModel(model, verbose=False, data_output=False):
 	# 2009: first year of data in srdb
 	# 2016: Jap/Arg expansion
 	FIRST_YEAR_TO_REPORT = 2016
-	#FIRST_YEAR_TO_REPORT = 2010
+	FIRST_YEAR_TO_REPORT = 2010
 	yr = FIRST_YEAR_TO_REPORT
 	yr_residuals = []
 	yr_wins = 0
@@ -597,19 +597,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
-# current:
-"""
-LS
-('mean:', -0.06912423752926948)
-('std dev:', 15.110670646545847)
-('mean abs error:', 11.488221497058168)
-('mean sq error:', 228.33714554859628)
-
-3op
-('mean:', 0.4453783010585159)
-('std dev:', 15.183961311584747)
-('mean abs error:', 11.484454264883649)
-('mean sq error:', 230.75104294275613)
-"""
