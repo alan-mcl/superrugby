@@ -218,7 +218,7 @@ games = [\
 	Game("25-Feb-11", "Highlanders", "Chiefs", 23, 13),
 	Game("25-Feb-11", "Rebels", "Brumbies", 25, 24),
 	Game("25-Feb-11", "Cheetahs", "Bulls", 23, 25),
-#	Game("26-Feb-11", "Hurricanes", "Crusaders", ), NO DATA
+#	Game("26-Feb-11", "Hurricanes", "Crusaders", ), # Match abandoned due to NZ earthquake
 	Game("26-Feb-11", "Waratahs", "Reds", 30, 6),
 	Game("26-Feb-11", "Sharks", "Blues", 26, 12),
 	Game("26-Feb-11", "Stormers", "Lions", 19, 16),
@@ -1314,12 +1314,12 @@ games = [\
 	#Bye/s: Stormers
 
 	#Round 5
-	Game("15-Mar-19", "Chiefs", "Hurricanes", None, None),
-	Game("15-Mar-19", "Brumbies", "Waratahs", None, None),
-	Game("15-Mar-19", "Stormers", "Jaguares", None, None),
-	Game("16-Mar-19", "Sunwolves", "Reds", None, None),
-	Game("16-Mar-19", "Highlanders", "Crusaders", None, None),
-	Game("16-Mar-19", "Lions", "Rebels", None, None),
+	Game("15-Mar-19", "Chiefs", "Hurricanes", 23, 23),
+	Game("15-Mar-19", "Brumbies", "Waratahs", 19, 13),
+	Game("15-Mar-19", "Stormers", "Jaguares", 35, 8),
+	Game("16-Mar-19", "Sunwolves", "Reds", 31, 34),
+#	Game("16-Mar-19", "Highlanders", "Crusaders", None, None), # Match abandoned due to NZ terror attacks
+	Game("16-Mar-19", "Lions", "Rebels", 36, 33),
 	#Bye/s: Bulls, Sharks, Blues
 
 	#Round 6
