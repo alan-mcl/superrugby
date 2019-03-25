@@ -1323,13 +1323,13 @@ games = [\
 	#Bye/s: Bulls, Sharks, Blues
 
 	#Round 6
-	Game("22-Mar-19", "Blues", "Highlanders", None, None),
-	Game("23-Mar-19", "Hurricanes", "Stormers", None, None),
-	Game("23-Mar-19", "Waratahs", "Crusaders", None, None),
-	Game("23-Mar-19", "Sunwolves", "Lions", None, None),
-	Game("23-Mar-19", "Bulls", "Chiefs", None, None),
-	Game("23-Mar-19", "Sharks", "Rebels", None, None),
-	Game("24-Mar-19", "Reds", "Brumbies", None, None),
+	Game("22-Mar-19", "Blues", "Highlanders", 33, 26),
+	Game("23-Mar-19", "Hurricanes", "Stormers", 34, 28),
+	Game("23-Mar-19", "Waratahs", "Crusaders", 20, 12),
+	Game("23-Mar-19", "Sunwolves", "Lions", 24, 37),
+	Game("23-Mar-19", "Bulls", "Chiefs", 20, 56),
+	Game("23-Mar-19", "Sharks", "Rebels", 28, 14),
+	Game("24-Mar-19", "Reds", "Brumbies", 36, 14),
 	#Bye/s: Jaguares
 
 	#Round 7

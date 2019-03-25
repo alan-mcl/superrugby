@@ -377,11 +377,38 @@ class TiersModel(Model):
 		
 	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
 		pass
+		
+#==============================================================================		
+def closeGameAnalysis(close_games):
+	
+	residuals = []
+	wins = 0
+	mp = 0
+	bonus = 0
+	
+	for game in close_games:
+		d = game[0]
+		pred_margin = game[1]
+		actual_margin = game[2].home_score - game[2].away_score
+		error = actual_margin - pred_margin
+		residuals.append(error)
+		
+		if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
+			wins += 1
+		
+		if error <= 5 and error >= -5:
+			mp += 1
+			
+		if round(error) == 0:
+			bonus += 1
+	
+	summary("CLOSE", residuals, wins, mp, bonus)
 
 #==============================================================================
 def runModel(model, verbose=False, data_output=False):
 	elo = {}
 	residuals = []
+	close_games = []
 	wins = 0.0
 	margin_pts = 0
 	bonus_pts = 0
@@ -391,6 +418,8 @@ def runModel(model, verbose=False, data_output=False):
 	# 2016: Jap/Arg expansion
 	FIRST_YEAR_TO_REPORT = 2016
 	FIRST_YEAR_TO_REPORT = 2010
+	CLOSE_GAME_D = 0.05
+	
 	yr = FIRST_YEAR_TO_REPORT
 	yr_residuals = []
 	yr_wins = 0
@@ -455,6 +484,9 @@ def runModel(model, verbose=False, data_output=False):
 			elo[game.home_team] = new_home_elo
 			elo[game.away_team] = new_away_elo
 			
+			if abs(d) < CLOSE_GAME_D:
+				close_games.append( (d, pred_margin, game) )
+			
 		# one year burn in
 		if year > FIRST_YEAR_TO_REPORT-1:
 
@@ -493,7 +525,9 @@ def runModel(model, verbose=False, data_output=False):
 	if verbose or not data_output:
 		summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
 		summary("ALL ", residuals, wins, margin_pts, bonus_pts)
-					
+		
+	closeGameAnalysis(close_games)
+		
 	return residuals
 	
 def summary(name, residuals, wins, margin_pts, bonus_pts):
@@ -505,8 +539,8 @@ def summary(name, residuals, wins, margin_pts, bonus_pts):
 	winp = 100.0*wins/len(residuals)
 	bru = wins+margin_pts*0.5
 	
-	print "%s (n=%i): mean %2.1f, stddev %4.1f, mdm %4.1f, mse %4.1f, win%% %3.1f, m[%i] b[%i] BRU [%.1f]" % \
-		(name, len(residuals), mean, stddev, mdm, mse, winp, margin_pts, bonus_pts, bru)
+	print "%s (n=%i): mean %2.1f, stddev %4.1f, mdm %4.1f, mse %4.1f, win[%3.1f%%], m%%[%3.1f%%] b%%[%3.1f%%] BRU [%.1f]" % \
+		(name, len(residuals), mean, stddev, mdm, mse, winp, 100.0*margin_pts/len(residuals), 100.0*bonus_pts/len(residuals), bru)
 
 def optimize(model_param):
 	"""
