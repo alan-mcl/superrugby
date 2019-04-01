@@ -1333,12 +1333,12 @@ games = [\
 	#Bye/s: Jaguares
 
 	#Round 7
-	Game("29-Mar-19", "Hurricanes", "Crusaders", None, None),
-	Game("29-Mar-19", "Waratahs", "Sunwolves", None, None),
-	Game("30-Mar-19", "Blues", "Stormers", None, None),
-	Game("30-Mar-19", "Reds", "Rebels", None, None),
-	Game("30-Mar-19", "Sharks", "Bulls", None, None),
-	Game("30-Mar-19", "Jaguares", "Chiefs", None, None),
+	Game("29-Mar-19", "Hurricanes", "Crusaders", 8, 32),
+	Game("29-Mar-19", "Waratahs", "Sunwolves", 29, 31),
+	Game("30-Mar-19", "Blues", "Stormers", 24, 9),
+	Game("30-Mar-19", "Reds", "Rebels", 13, 32),
+	Game("30-Mar-19", "Sharks", "Bulls", 16, 19),
+	Game("30-Mar-19", "Jaguares", "Chiefs", 27, 30),
 	#Bye/s: Lions, Brumbies, Highlanders
 
 	#Round 8
