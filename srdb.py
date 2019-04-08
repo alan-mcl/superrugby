@@ -1342,13 +1342,13 @@ games = [\
 	#Bye/s: Lions, Brumbies, Highlanders
 
 	#Round 8
-	Game("5-Apr-19", "Highlanders", "Hurricanes", None, None),
-	Game("5-Apr-19", "Reds", "Stormers", None, None),
-	Game("5-Apr-19", "Lions", "Sharks", None, None),
-	Game("6-Apr-19", "Crusaders", "Brumbies", None, None),
-	Game("6-Apr-19", "Blues", "Waratahs", None, None),
-	Game("6-Apr-19", "Rebels", "Sunwolves", None, None),
-	Game("6-Apr-19", "Bulls", "Jaguares", None, None),
+	Game("5-Apr-19", "Highlanders", "Hurricanes", 28, 31),
+	Game("5-Apr-19", "Reds", "Stormers", 24, 12),
+	Game("5-Apr-19", "Lions", "Sharks", 5, 42),
+	Game("6-Apr-19", "Crusaders", "Brumbies", 36, 14),
+	Game("6-Apr-19", "Blues", "Waratahs", 32, 29),
+	Game("6-Apr-19", "Rebels", "Sunwolves", 42, 15),
+	Game("6-Apr-19", "Bulls", "Jaguares", 20, 22),
 	#Bye/s: Chiefs
 
 	#Round 9
