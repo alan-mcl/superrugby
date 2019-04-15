@@ -1352,12 +1352,12 @@ games = [\
 	#Bye/s: Chiefs
 
 	#Round 9
-	Game("12-Apr-19", "Crusaders", "Highlanders", None, None),
-	Game("12-Apr-19", "Rebels", "Stormers", None, None),
-	Game("13-Apr-19", "Chiefs", "Blues", None, None),
-	Game("13-Apr-19", "Brumbies", "Lions", None, None),
-	Game("13-Apr-19", "Sharks", "Jaguares", None, None),
-	Game("13-Apr-19", "Bulls", "Reds", None, None),
+	Game("12-Apr-19", "Crusaders", "Highlanders", 43, 17),
+	Game("12-Apr-19", "Rebels", "Stormers", 24, 41),
+	Game("13-Apr-19", "Chiefs", "Blues", 33, 29),
+	Game("13-Apr-19", "Brumbies", "Lions", 31, 20),
+	Game("13-Apr-19", "Sharks", "Jaguares", 17, 51),
+	Game("13-Apr-19", "Bulls", "Reds", 32, 17),
 	#Bye/s: Sunwolves, Waratahs, Hurricanes
 
 	#Round 10
