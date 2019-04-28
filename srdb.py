@@ -1361,21 +1361,21 @@ games = [\
 	#Bye/s: Sunwolves, Waratahs, Hurricanes
 
 	#Round 10
-	Game("19-Apr-19", "Chiefs", "Lions", None, None),
-	Game("19-Apr-19", "Sunwolves", "Hurricanes", None, None),
-	Game("19-Apr-19", "Sharks", "Reds", None, None),
-	Game("20-Apr-19", "Highlanders", "Blues", None, None),
-	Game("20-Apr-19", "Waratahs", "Rebels", None, None),
-	Game("20-Apr-19", "Stormers", "Brumbies", None, None),
+	Game("19-Apr-19", "Chiefs", "Lions", 17, 23),
+	Game("19-Apr-19", "Sunwolves", "Hurricanes", 23, 29),
+	Game("19-Apr-19", "Sharks", "Reds", 14, 21),
+	Game("20-Apr-19", "Highlanders", "Blues", 24, 12),
+	Game("20-Apr-19", "Waratahs", "Rebels", 23, 20),
+	Game("20-Apr-19", "Stormers", "Brumbies", 17, 19),
 	#Bye/s: Bulls, Jaguares, Crusaders
 
 	#Round 11
-	Game("26-Apr-19", "Crusaders", "Lions", None, None),
-	Game("26-Apr-19", "Sunwolves", "Highlanders", None, None),
-	Game("27-Apr-19", "Hurricanes", "Chiefs", None, None),
-	Game("27-Apr-19", "Waratahs", "Sharks", None, None),
-	Game("27-Apr-19", "Stormers", "Bulls", None, None),
-	Game("27-Apr-19", "Jaguares", "Brumbies", None, None),
+	Game("26-Apr-19", "Crusaders", "Lions", 36, 10),
+	Game("26-Apr-19", "Sunwolves", "Highlanders", 0, 52),
+	Game("27-Apr-19", "Hurricanes", "Chiefs", 47, 19),
+	Game("27-Apr-19", "Waratahs", "Sharks", 15, 23),
+	Game("27-Apr-19", "Stormers", "Bulls", 24, 23),
+	Game("27-Apr-19", "Jaguares", "Brumbies", 20, 15),
 	#Bye/s: Rebels, Reds, Blues
 
 	#Round 12
