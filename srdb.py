@@ -1389,13 +1389,13 @@ games = [\
 	#Bye/s: Lions
 
 	#Round 13
-	Game("10-May-19", "Blues", "Hurricanes", None, None),
-	Game("10-May-19", "Rebels", "Reds", None, None),
-	Game("10-May-19", "Bulls", "Crusaders", None, None),
-	Game("11-May-19", "Highlanders", "Jaguares", None, None),
-	Game("11-May-19", "Chiefs", "Sharks", None, None),
-	Game("11-May-19", "Lions", "Waratahs", None, None),
-	Game("12-May-19", "Brumbies", "Sunwolves", None, None),
+	Game("10-May-19", "Blues", "Hurricanes", 12, 22),
+	Game("10-May-19", "Rebels", "Reds", 30, 24),
+	Game("10-May-19", "Bulls", "Crusaders", 13, 45),
+	Game("11-May-19", "Highlanders", "Jaguares", 32, 27),
+	Game("11-May-19", "Chiefs", "Sharks", 29, 23),
+	Game("11-May-19", "Lions", "Waratahs", 29, 28),
+	Game("12-May-19", "Brumbies", "Sunwolves", 33, 0),
 	#Bye/s: Stormers
 
 	#Round 14
