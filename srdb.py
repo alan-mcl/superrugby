@@ -1418,13 +1418,13 @@ games = [\
 	#Bye/s: Hurricanes
 
 	#Round 16
-	Game("31-May-19", "Blues", "Bulls", None, None),
-	Game("31-May-19", "Rebels", "Waratahs", None, None),
-	Game("1-Jun-19", "Sunwolves", "Brumbies", None, None),
-	Game("1-Jun-19", "Chiefs", "Crusaders", None, None),
-	Game("1-Jun-19", "Reds", "Jaguares", None, None),
-	Game("1-Jun-19", "Sharks", "Hurricanes", None, None),
-	Game("1-Jun-19", "Lions", "Stormers", None, None),
+	Game("31-May-19", "Blues", "Bulls", 22, 22),
+	Game("31-May-19", "Rebels", "Waratahs", 15, 20),
+	Game("1-Jun-19", "Sunwolves", "Brumbies", 19, 42),
+	Game("1-Jun-19", "Chiefs", "Crusaders", 40, 27),
+	Game("1-Jun-19", "Reds", "Jaguares", 23, 34),
+	Game("1-Jun-19", "Sharks", "Hurricanes", 17, 30),
+	Game("1-Jun-19", "Lions", "Stormers", 41, 22),
 	#Bye/s: Highlanders
 
 	#Round 17
