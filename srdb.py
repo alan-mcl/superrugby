@@ -1428,13 +1428,13 @@ games = [\
 	#Bye/s: Highlanders
 
 	#Round 17
-	Game("7-Jun-19", "Highlanders", "Bulls", None, None),
-	Game("7-Jun-19", "Reds", "Blues", None, None),
-	Game("8-Jun-19", "Crusaders", "Rebels", None, None),
-	Game("8-Jun-19", "Waratahs", "Brumbies", None, None),
-	Game("8-Jun-19", "Lions", "Hurricanes", None, None),
-	Game("8-Jun-19", "Stormers", "Sunwolves", None, None),
-	Game("8-Jun-19", "Jaguares", "Sharks", None, None),
+	Game("7-Jun-19", "Highlanders", "Bulls", 24, 24),
+	Game("7-Jun-19", "Reds", "Blues", 29, 28),
+	Game("8-Jun-19", "Crusaders", "Rebels", 66, 0),
+	Game("8-Jun-19", "Waratahs", "Brumbies", 24, 35),
+	Game("8-Jun-19", "Lions", "Hurricanes", 17, 37),
+	Game("8-Jun-19", "Stormers", "Sunwolves", 31, 18),
+	Game("8-Jun-19", "Jaguares", "Sharks", 34, 7),
 	#Bye/s: Chiefs
 
 	#Round 18
