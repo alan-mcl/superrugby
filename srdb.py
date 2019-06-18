@@ -1438,14 +1438,20 @@ games = [\
 	#Bye/s: Chiefs
 
 	#Round 18
-	Game("14-Jun-19", "Highlanders", "Waratahs", None, None),
-	Game("14-Jun-19", "Rebels", "Chiefs", None, None),
-	Game("14-Jun-19", "Jaguares", "Sunwolves", None, None),
-	Game("15-Jun-19", "Hurricanes", "Blues", None, None),
-	Game("15-Jun-19", "Brumbies", "Reds", None, None),
-	Game("15-Jun-19", "Stormers", "Sharks", None, None),
-	Game("15-Jun-19", "Bulls", "Lions", None, None),
+	Game("14-Jun-19", "Highlanders", "Waratahs", 49, 12),
+	Game("14-Jun-19", "Rebels", "Chiefs", 8, 59),
+	Game("14-Jun-19", "Jaguares", "Sunwolves", 52, 10),
+	Game("15-Jun-19", "Hurricanes", "Blues", 29, 24),
+	Game("15-Jun-19", "Brumbies", "Reds", 40, 27),
+	Game("15-Jun-19", "Stormers", "Sharks", 9, 12),
+	Game("15-Jun-19", "Bulls", "Lions", 48, 27),
 	#Bye/s: Crusaders
+
+	#QF
+	Game("21-Jun-19", "Crusaders", "Highlanders", None, None),
+	Game("22-Jun-19", "Jaguares", "Chiefs", None, None),
+	Game("22-Jun-19", "Hurricanes", "Bulls", None, None),
+	Game("22-Jun-19", "Brumbies", "Sharks", None, None),
 
 ]
 
