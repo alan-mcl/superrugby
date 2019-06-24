@@ -1448,10 +1448,14 @@ games = [\
 	#Bye/s: Crusaders
 
 	#QF
-	Game("21-Jun-19", "Crusaders", "Highlanders", None, None),
-	Game("22-Jun-19", "Jaguares", "Chiefs", None, None),
-	Game("22-Jun-19", "Hurricanes", "Bulls", None, None),
-	Game("22-Jun-19", "Brumbies", "Sharks", None, None),
+	Game("21-Jun-19", "Crusaders", "Highlanders", 38, 14),
+	Game("22-Jun-19", "Jaguares", "Chiefs", 21, 16),
+	Game("22-Jun-19", "Hurricanes", "Bulls", 35, 28),
+	Game("22-Jun-19", "Brumbies", "Sharks", 38, 13),
+
+	#SF
+	Game("21-Jun-19", "Jaguares", "Brumbies", None, None),
+	Game("22-Jun-19", "Crusaders", "Hurricanes", None, None),
 
 ]
 
