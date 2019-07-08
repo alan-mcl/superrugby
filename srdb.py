@@ -1458,7 +1458,7 @@ games = [\
 	Game("22-Jun-19", "Crusaders", "Hurricanes", 30, 26),
 	
 	#F
-	Game("6-Jul-19", "Crusaders", "Jaguares", None, None),
+	Game("6-Jul-19", "Crusaders", "Jaguares", 19, 3),
 
 ]
 
