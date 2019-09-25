@@ -1,15 +1,11 @@
 import argparse
-from collections import defaultdict
 from functools import total_ordering
-from math import sqrt
-from math import exp
 
 import numpy as np
-from scipy.optimize import minimize
-from scipy.special import erf, erfinv
 from skopt import gp_minimize
 
 import srdb
+
 
 #--------------------------------------------
 def bruRound(margin, default_win_margin=6):
@@ -22,8 +18,6 @@ def bruRound2(margin, default_win_margin=6):
 		return default_win_margin * np.sign(margin)
 	else:
 		return round(margin)
-		
-	#return max(6, round(margin)) * np.sign(margin)
 
 #--------------------------------------------
 # traditional ELO functions
@@ -377,21 +371,76 @@ class TiersModel(Model):
 		
 	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
 		pass
+
+#==============================================================================
+class OddsModel(Model):
+
+	def __init__(this):
+		pass
+
+	def getName(this):
+		return "OddsModel"
+
+	def getStartingElo(this):
+		return 1500
+
+	def getPredictedMargin(this, game, home_elo, away_elo):
+
+		hlc = game.home_line_close
+
+		# no odds: return home team by 3
+		if hlc is None or hlc == 0:
+			return (3, 0.5, 0.5)
+
+		# hack this to get kinda sensible results
+		if hlc < 0:
+			away_perc = 1.0/abs(hlc)
+			home_perc = 1.0-away_perc
+		else:
+			home_perc = 1.0/abs(hlc)
+			away_perc = 1.0-home_perc
+
+		return (bruRound2(-hlc, 3), home_perc, away_perc)
+
+	def getNewElo(this, old_elo, expected, points_for, points_against):
+		return 1500
+
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+		pass
 		
 #==============================================================================		
 def closeGameAnalysis(close_games):
 	
 	residuals = []
+	hlc_residuals = []
 	wins = 0
 	mp = 0
 	bonus = 0
-	
-	for game in close_games:
-		d = game[0]
-		pred_margin = game[1]
-		actual_margin = game[2].home_score - game[2].away_score
+	bets = 0
+	betwins = 0
+	betwinamt = 0.0
+
+	for game_tuple in close_games:
+		date = game_tuple[0]
+		pred_margin = game_tuple[1]
+		bet = game_tuple[2]
+		betwin = game_tuple[3]
+		betamt = game_tuple[4]
+		game = game_tuple[5]
+
+		bets += bet
+		betwins += betwin
+
+		if betwin == 1:
+			betwinamt += betamt * 1.94
+
+		actual_margin = game.home_score - game.away_score
 		error = actual_margin - pred_margin
 		residuals.append(error)
+
+		if game.home_line_close is not None:
+			hlc_error = (-game.home_line_close) - pred_margin
+			hlc_residuals.append(hlc_error)
 		
 		if np.sign(pred_margin) == np.sign(actual_margin) and actual_margin != 0:
 			wins += 1
@@ -402,17 +451,21 @@ def closeGameAnalysis(close_games):
 		if round(error) == 0:
 			bonus += 1
 	
-	summary("CLOSE", residuals, wins, mp, bonus)
+	summary("CLOSE", residuals, wins, mp, bonus, hlc_residuals, bets, betwins, betwinamt)
 
 #==============================================================================
-def runModel(model, verbose=False, data_output=False):
+def runModel(model, verbose=False, data_output=False, bet_output=False):
 	elo = {}
 	residuals = []
 	close_games = []
 	wins = 0.0
 	margin_pts = 0
 	bonus_pts = 0
-	
+	hlc_redisuals = []
+	bets = 0
+	betwins = 0
+	betwinamt = 0.0
+
 	# 1995: SUPER12
 	# 2009: first year of data in srdb
 	# 2016: Jap/Arg expansion
@@ -427,7 +480,11 @@ def runModel(model, verbose=False, data_output=False):
 	yr_bonus_pts = 0
 	yr_elo_diffs = []
 	yr_actual_margins = []
-	
+	yr_hlc_residuals = []
+	yr_bets = 0
+	yr_betwins = 0
+	yr_betwinamt = 0.0
+
 	print "~"*20
 	print model.getName()
 	print "~"*20
@@ -463,19 +520,78 @@ def runModel(model, verbose=False, data_output=False):
 			actual_margin = 0
 			
 		d = home_perc-away_perc
-		
+
+		bet = 0
+		betwin = 0
+		betamt = 0
+		beton = shouldBet(game, pred_margin)
+		if beton is not None:
+			bet = 1
+		if game.home_line_close is not None and beton is not None:
+
+			distance = abs(abs(pred_margin)-abs(game.home_line_close))
+
+			if distance > 20:
+				betamt = 3
+			elif distance > 10:
+				betamt = 2
+			else:
+				betamt = 1
+
+			betwinamt -= betamt
+			yr_betwinamt -= betamt
+
+			if actual_margin > 0:
+				if actual_margin > -game.home_line_close:
+					# predict home team by 3, bookies handicap them by 2. bet on home
+					if beton == game.home_team:
+						betwin = 1
+				else:
+					# predict home team by 3, bookies handicap them by 4. bet on away
+					if beton == game.away_team:
+						betwin = 1
+			elif pred_margin < 0:
+				if -pred_margin > game.home_line_close:
+					# predict away team by 3, bookies handicap them by 2. bet on away
+					if beton == game.away_team:
+						betwin = 1
+				else:
+					# predict away team by 3, bookies handicap them by 4. bet on home
+					if beton == game.home_team:
+						betwin = 1
+
+			if betwin == 1:
+				betwinamt += betamt * 1.94
+				yr_betwinamt += betamt * 1.94
+
+		bets += bet
+		betwins += betwin
+		yr_bets += bet
+		yr_betwins += betwin
+
+		# ----------- printout stuffs
+		hlc = "?"
+		betstr = "-"
+		if game.home_line_close is not None:
+			hlc = str(game.home_line_close)
+		if bet == 1:
+			if betwin == 1:
+				betstr = "W"
+			else:
+				betstr = "L"
 		if verbose:
-			if model.getName() == "MElo":
-				print "week %i: %s: %s(%i) v %s(%i): predicted %d actual %i" % (game.week, game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin, actual_margin)
-			else:
-				print "week %i: %s: %s(%i) v %s(%i): predicted %d actual %i" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin)
+			print "week %i: %s: %s(%i) v %s(%i): p %d a %i hlc %s beton %s(%d,%s)" % \
+				(game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin, hlc, beton, betamt, betstr)
 		elif not game.finished:
-			if model.getName() == "MElo":
-				print "week %i: %s: %s(%i) v %s(%i): predicted %d" % (game.week, game.date, game.home_team, home_elo[.5], game.away_team, away_elo[.5], pred_margin)
-			else:
-				print "week %i: %s: %s(%i) v %s(%i): predicted %d" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin)
+			print "week %i: %s: %s(%i) v %s(%i): predicted %d hlc %s beton %s(%d,%s)" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, hlc, beton, betamt, betstr)
 		elif data_output and year > 2009:
 			print "%i,%i,%s,%s,%f,%i" % (year, game.week, game.home_team, game.away_team, d, actual_margin)
+
+		if bet_output:
+			if bet == 1:
+				print "week %i: %s: %s(%i) v %s(%i): p %d a %i hlc %s beton %s(%d,%s)" % \
+					(game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin, hlc, beton, betamt, betstr)
+		# ----------- printout stuffs
 				
 		if game.finished:
 			new_home_elo = model.getNewElo(home_elo, home_perc, game.home_score, game.away_score)
@@ -485,15 +601,16 @@ def runModel(model, verbose=False, data_output=False):
 			elo[game.away_team] = new_away_elo
 			
 			if abs(d) < CLOSE_GAME_D:
-				close_games.append( (d, pred_margin, game) )
+				close_games.append( (d, pred_margin, bet, betwin, betamt, game) )
 			
 		# one year burn in
 		if year > FIRST_YEAR_TO_REPORT-1:
 
 			if year > yr:
 				if verbose or not data_output:
-					summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
-					print "processing %s..." % (str(year))
+					summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts, yr_hlc_residuals, yr_bets, yr_betwins, yr_betwinamt)
+					if verbose:
+						print "processing %s..." % (str(year))
 				yr = year
 				yr_residuals = []
 				yr_wins = 0
@@ -501,11 +618,19 @@ def runModel(model, verbose=False, data_output=False):
 				yr_bonus_pts = 0
 				yr_elo_diffs = []
 				yr_actual_margins = []
-				
+				yr_hlc_residuals = []
+				yr_bets = 0
+				yr_betwins = 0
+				yr_betwinamt = 0
+
 			if game.finished:
 				error = actual_margin - pred_margin
 				residuals.append(error)
 				yr_residuals.append(error)
+				if game.home_line_close is not None:
+					hlc_error = (-game.home_line_close) - pred_margin
+					hlc_redisuals.append(hlc_error)
+					yr_hlc_residuals.append(hlc_error)
 
 				yr_elo_diffs.append(d)
 				yr_actual_margins.append(actual_margin)
@@ -523,24 +648,52 @@ def runModel(model, verbose=False, data_output=False):
 					yr_bonus_pts += 1
 				
 	if verbose or not data_output:
-		summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts)
-		summary("ALL ", residuals, wins, margin_pts, bonus_pts)
+		summary(str(yr), yr_residuals, yr_wins, yr_margin_pts, yr_bonus_pts, yr_hlc_residuals, yr_bets, yr_betwins, yr_betwinamt)
+		summary("ALL ", residuals, wins, margin_pts, bonus_pts, hlc_redisuals, bets, betwins, betwinamt)
 		
 	closeGameAnalysis(close_games)
 		
 	return residuals
+
+def shouldBet(game, pred_margin):
+	if game.home_line_close is not None:
+
+		if abs(pred_margin) > 1 and \
+				4 < abs(abs(pred_margin)-abs(game.home_line_close)) < 150:
+			if pred_margin > 0:
+				if pred_margin > -game.home_line_close:
+					# predict home team by 3, bookies handicap them by 2. bet on home
+					return game.home_team
+				else:
+					# predict home team by 3, bookies handicap them by 4. bet on away
+					return game.away_team
+			elif pred_margin < 0:
+				if -pred_margin > game.home_line_close:
+					# predict away team by 3, bookies handicap them by 2. bet on away
+					return game.away_team
+				else:
+					# predict away team by 3, bookies handicap them by 4. bet on home
+					return game.home_team
+
+	return None
+
+def summary(name, residuals, wins, margin_pts, bonus_pts, hlc_residuals, bets, betwins, betwinamt):
 	
-def summary(name, residuals, wins, margin_pts, bonus_pts):
-	
-	mean = np.mean(residuals)
-	stddev = np.std(residuals)
+	# mean = np.mean(residuals)
+	# stddev = np.std(residuals)
 	mdm = np.abs(residuals).mean()
 	mse = np.square(residuals).mean()
 	winp = 100.0*wins/len(residuals)
 	bru = wins+margin_pts*0.5
-	
-	print "%s (n=%i): mean %2.1f, stddev %4.1f, mdm %4.1f, mse %4.1f, win[%3.1f%%], m%%[%3.1f%%] b%%[%3.1f%%] BRU [%.1f]" % \
-		(name, len(residuals), mean, stddev, mdm, mse, winp, 100.0*margin_pts/len(residuals), 100.0*bonus_pts/len(residuals), bru)
+	# hle_mse = np.square(hlc_residuals).mean()
+
+	betp = 100.0*bets/len(residuals)
+	betwinp = 0.0
+	if bets > 0:
+		betwinp = 100.0*betwins/bets
+
+	print "%s (n=%i): mdm[%4.1f] mse[%4.1f] win[%3.1f%%], m%%[%3.1f%%] b%%[%3.1f%%] BRU[%.1f] bets[%d] betwin%%[%.1f%%] betwinamt[%.1f]" % \
+		  (name, len(residuals), mdm, mse, winp, 100.0*margin_pts/len(residuals), 100.0*bonus_pts/len(residuals), bru, bets, betwinp, betwinamt)
 
 def optimize(model_param):
 	"""
@@ -583,7 +736,7 @@ def main():
 		"model",
 		action="store",
 		type=str,
-		help="'all' for all, 'lls' for Linear LS, '3op' for Quadratic, 'melo' for MElo, 'best' for current best")
+		help="'all' for all, 'lls' for Linear LS, '3op' for Quadratic, 'best' for current best")
 	parser.add_argument(
 		"--v",
 		action="store_true",
@@ -599,12 +752,18 @@ def main():
 		action="store_true",
 		default=False,
 		help="output data CSV")
+	parser.add_argument(
+		"--b",
+		action="store_true",
+		default=False,
+		help="output bets")
 
 	args = parser.parse_args()
 	args_dict = vars(args)
 	
 	verbose = args_dict['v']
 	data_output = args_dict['d']
+	bet_output = args_dict['b']
 	
 	m = args_dict['model']
 	
@@ -612,21 +771,22 @@ def main():
 		optimize(m)
 	else:
 		if m == "lls":
-			runModel(LinearLSModel(), verbose, data_output)
-			runModel(RoundedLLSModel(), verbose, data_output)
-			runModel(RoundedLLSModel2(kfactor=50, default_win_margin=3), verbose, data_output)
+			runModel(LinearLSModel(), verbose, data_output, bet_output)
+			runModel(RoundedLLSModel(), verbose, data_output, bet_output)
+			runModel(RoundedLLSModel2(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
 		elif m == "3op":
-			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
-			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3), verbose, data_output)
-		elif m == "melo":
-			runModel(MeloModel(), verbose, data_output)
+			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
+			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
 		elif m == "all":
-			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3, d_min=0.1), verbose, data_output)
-			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
-			runModel(RoundedLLSModel(kfactor=50, default_win_margin=3), verbose, data_output)
-			runModel(TiersModel(), verbose, data_output)
+			runModel(RoundedQuadraticModel4(kfactor=50, default_win_margin=3, d_min=0.1), verbose, data_output, bet_output)
+			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
+			runModel(RoundedLLSModel(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
+			runModel(TiersModel(), verbose, data_output, bet_output)
+		elif m == "odds":
+			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
+			runModel(OddsModel(), verbose, data_output, bet_output)
 		elif m == "best":
-			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output)
+			runModel(RoundedQuadraticModel3(kfactor=50, default_win_margin=3), verbose, data_output, bet_output)
 			
 
 if __name__ == "__main__":
