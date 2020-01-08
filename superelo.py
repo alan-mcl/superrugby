@@ -678,7 +678,10 @@ def shouldBet(game, pred_margin):
 	return None
 
 def summary(name, residuals, wins, margin_pts, bonus_pts, hlc_residuals, bets, betwins, betwinamt):
-	
+
+	if len(residuals) == 0:
+		return
+
 	# mean = np.mean(residuals)
 	# stddev = np.std(residuals)
 	mdm = np.abs(residuals).mean()
