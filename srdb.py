@@ -24,13 +24,13 @@ class Game:
 games = \
     [
         # Round 1
-        Game("31-Jan-20", "Blues", "Chiefs", None, None, None),
-        Game("31-Jan-20", "Brumbies", "Reds", None, None, None),
-        Game("31-Jan-20", "Sharks", "Bulls", None, None, None),
-        Game("1-Feb-20", "Sunwolves", "Rebels", None, None, None),
-        Game("1-Feb-20", "Crusaders", "Waratahs", None, None, None),
-        Game("1-Feb-20", "Stormers", "Hurricanes", None, None, None),
-        Game("1-Feb-20", "Jaguares", "Lions", None, None, None),
+        Game("31-Jan-20", "Blues", "Chiefs", 29, 37, None),
+        Game("31-Jan-20", "Brumbies", "Reds", 27, 24, None),
+        Game("31-Jan-20", "Sharks", "Bulls", 23, 15, None),
+        Game("1-Feb-20", "Sunwolves", "Rebels", 36, 27, None),
+        Game("1-Feb-20", "Crusaders", "Waratahs", 43, 25, None),
+        Game("1-Feb-20", "Stormers", "Hurricanes", 27, 0, None),
+        Game("1-Feb-20", "Jaguares", "Lions", 38, 8, None),
 
         # Round 2
         Game("7-Feb-20", "Highlanders", "Sharks", None, None, None),
