@@ -33,13 +33,13 @@ games = \
         Game("1-Feb-20", "Jaguares", "Lions", 38, 8, None),
 
         # Round 2
-        Game("7-Feb-20", "Highlanders", "Sharks", None, None, None),
-        Game("7-Feb-20", "Brumbies", "Rebels", None, None, None),
-        Game("8-Feb-20", "Chiefs", "Crusaders", None, None, None),
-        Game("8-Feb-20", "Waratahs", "Blues", None, None, None),
-        Game("8-Feb-20", "Lions", "Reds", None, None, None),
-        Game("8-Feb-20", "Stormers", "Bulls", None, None, None),
-        Game("8-Feb-20", "Jaguares", "Hurricanes", None, None, None),
+        Game("7-Feb-20", "Highlanders", "Sharks", 20, 42, None),
+        Game("7-Feb-20", "Brumbies", "Rebels", 39, 26, None),
+        Game("8-Feb-20", "Chiefs", "Crusaders", 25, 15, None),
+        Game("8-Feb-20", "Waratahs", "Blues", 12, 32, None),
+        Game("8-Feb-20", "Lions", "Reds", 27, 20, None),
+        Game("8-Feb-20", "Stormers", "Bulls", 13, 0, None),
+        Game("8-Feb-20", "Jaguares", "Hurricanes", 23, 26, None),
 
         # Round 3
         Game("14-Feb-20", "Blues", "Crusaders", None, None, None),
