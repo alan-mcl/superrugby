@@ -51,12 +51,12 @@ games = \
         Game("15-Feb-20", "Jaguares", "Reds", 43, 27, None),
 
         # Round 4
-        Game("21-Feb-20", "Crusaders", "Highlanders", None, None, None),
-        Game("22-Feb-20", "Rebels", "Sharks", None, None, None),
-        Game("22-Feb-20", "Chiefs", "Brumbies", None, None, None),
-        Game("22-Feb-20", "Reds", "Sunwolves", None, None, None),
-        Game("22-Feb-20", "Stormers", "Jaguares", None, None, None),
-        Game("22-Feb-20", "Bulls", "Blues", None, None, None),
+        Game("21-Feb-20", "Crusaders", "Highlanders", 33, 13, None),
+        Game("22-Feb-20", "Rebels", "Sharks", 24, 36, None),
+        Game("22-Feb-20", "Chiefs", "Brumbies", 14, 26, None),
+        Game("22-Feb-20", "Reds", "Sunwolves", 64, 5, None),
+        Game("22-Feb-20", "Stormers", "Jaguares", 17, 7, None),
+        Game("22-Feb-20", "Bulls", "Blues", 21, 23, None),
 
         # Round 5
         Game("28-Feb-20", "Highlanders", "Rebels", None, None, None),

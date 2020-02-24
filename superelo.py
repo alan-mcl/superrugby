@@ -110,7 +110,7 @@ class Model:
 	def getNewElo(this, old_elo, expected, points_for, points_against):
 		pass
 		
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		pass
 		
 #==============================================================================
@@ -145,7 +145,7 @@ class LinearLSModel(Model):
 				
 		return elo(old_elo, expected, actual, this.kfactor)
 	
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		pass
 		
 #==============================================================================
@@ -160,7 +160,7 @@ class RoundedLLSModel(LinearLSModel):
 		
 		return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
 		
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		for team in elo.keys():
 			rtg = elo[team]
 			elo[team] = round(1500 + 0.9 * (rtg - 1500))
@@ -177,13 +177,13 @@ class RoundedLLSModel2(LinearLSModel):
 		
 		return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
 		
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		for team in elo.keys():
 			rtg = elo[team]
 			elo[team] = round(1500 + 0.9 * (rtg - 1500))
 			
 		if len(yr_elo_diffs) > 0:
-			(m1, m0) = polyfit(yr_elo_diffs, yr_actual_margins, 1)
+			(m1, m0) = polyfit(elo_diffs, actual_margins, 1)
 			this.m1 = m1
 			this.m0 = m0		
 			
@@ -225,7 +225,7 @@ class QuadraticModel(Model):
 				
 		return elo(old_elo, expected, actual, this.kfactor)
 	
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		pass
 
 
@@ -278,7 +278,7 @@ class RoundedQuadraticModel3(RoundedQuadraticModel2):
 	def getName(this):
 		return "3rd Order Poly (BRUround2, seasonal mean reg, k=%i, dmin=%.2f, dwm=%i)" % (this.kfactor, this.d_min, this.default_win_margin)
 	
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		for team in elo.keys():
 			rtg = elo[team]
 			elo[team] = round(1500 + 0.9 * (rtg - 1500))
@@ -293,7 +293,7 @@ class RoundedQuadraticModel4(RoundedQuadraticModel3):
 		this.default_win_margin = default_win_margin
 
 	def getName(this):
-		return "3rd Order Poly (BRUround2, seasonal mean reg, k=%i, dmin=%.2f, dwm=%i, TierModel dmin)" % (this.kfactor, this.d_min, this.default_win_margin)
+		return "3rd Order Poly (BRUround2, seasonal mean reg, k=%i, dmin=%.2f, dwm=%i, seasonal refit)" % (this.kfactor, this.d_min, this.default_win_margin)
 	
 	def getPredictedMargin(this, game, home_elo, away_elo):
 		
@@ -304,7 +304,16 @@ class RoundedQuadraticModel4(RoundedQuadraticModel3):
 			return tm.getPredictedMargin(game, home_elo, away_elo)
 		else:
 			return (bruRound2(pred_margin, this.default_win_margin), home_perc, away_perc)
-	
+
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
+		RoundedQuadraticModel3.newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins)
+
+		if len(yr_elo_diffs) > 0:
+			(m3, m2, m1, m0) = polyfit(elo_diffs, actual_margins, 3)
+			this.m3 = m3
+			this.m2 = m2
+			this.m1 = m1
+			this.m0 = m0
 
 #==============================================================================
 class TiersModel(Model):
@@ -369,7 +378,7 @@ class TiersModel(Model):
 	def getNewElo(this, old_elo, expected, points_for, points_against):
 		return 1500
 		
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		pass
 
 #==============================================================================
@@ -405,7 +414,7 @@ class OddsModel(Model):
 	def getNewElo(this, old_elo, expected, points_for, points_against):
 		return 1500
 
-	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins):
+	def newSeason(this, elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins):
 		pass
 		
 #==============================================================================		
@@ -461,6 +470,8 @@ def runModel(model, verbose=False, data_output=False, bet_output=False):
 	wins = 0.0
 	margin_pts = 0
 	bonus_pts = 0
+	elo_diffs = []
+	actual_margins = []
 	hlc_redisuals = []
 	bets = 0
 	betwins = 0
@@ -495,7 +506,7 @@ def runModel(model, verbose=False, data_output=False, bet_output=False):
 	for game in sorted(srdb.games, key=lambda g: Date(g.year, g.week)):
 	
 		if game.year > year:
-			model.newSeason(elo, yr_elo_diffs, yr_actual_margins)
+			model.newSeason(elo, yr_elo_diffs, yr_actual_margins, elo_diffs, actual_margins)
 			year = game.year
 			week = 0
 			if verbose:
@@ -586,8 +597,7 @@ def runModel(model, verbose=False, data_output=False, bet_output=False):
 			print "week %i: %s: %s(%i) v %s(%i): predicted %d hlc %s beton %s(%d,%s)" % (game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, hlc, beton, betamt, betstr)
 		elif data_output and year > 2009:
 			print "%i,%i,%s,%s,%f,%i" % (year, game.week, game.home_team, game.away_team, d, actual_margin)
-
-		if bet_output:
+		elif bet_output:
 			if bet == 1:
 				print "week %i: %s: %s(%i) v %s(%i): p %d a %i hlc %s beton %s(%d,%s)" % \
 					(game.week, game.date, game.home_team, home_elo, game.away_team, away_elo, pred_margin, actual_margin, hlc, beton, betamt, betstr)
@@ -631,6 +641,9 @@ def runModel(model, verbose=False, data_output=False, bet_output=False):
 					hlc_error = (-game.home_line_close) - pred_margin
 					hlc_redisuals.append(hlc_error)
 					yr_hlc_residuals.append(hlc_error)
+
+				elo_diffs.append(d)
+				actual_margins.append(d)
 
 				yr_elo_diffs.append(d)
 				yr_actual_margins.append(actual_margin)
